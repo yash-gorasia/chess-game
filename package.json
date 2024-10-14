@@ -1,0 +1,19 @@
+{
+  "name": "chess-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chess": "^1.2.2",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "socket.io": "^4.8.0"
+  }
+}
