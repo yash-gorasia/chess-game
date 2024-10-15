@@ -70,9 +70,9 @@ const renderBoard = () => {
                     handleMove(sourceSquare, targetSource)
                 }
             })
+            boardElement.append(squareElem);
         })
     })
-    boardElement.append(board);
 };
 
 const handleMove = () => {
