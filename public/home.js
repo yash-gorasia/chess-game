@@ -73,6 +73,14 @@ const renderBoard = () => {
             boardElement.append(squareElem);
         })
     })
+
+    // IMP 
+    // if the turn is of black piece then flip the board, else whole game will crash
+    if(playerRole === 'b') {
+        boardElement.classList.add("flipped");
+    } else {
+        boardElement.classList.remove("remove");
+    }
 };
 
 // here we are using concept of ascii value
