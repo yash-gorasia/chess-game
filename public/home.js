@@ -82,10 +82,12 @@ const renderBoard = () => {
 // so 97 + 0 and 8 - 8
 const handleMove = (source, target) => {
     const move = {
-        from:`${String.fromCharCode(97+source.col)}${8 - source.row}`,
-        to:`${String.fromCharCode(97+target.col)}${8 - target.row}`,
+        from: `${String.fromCharCode(97 + source.col)}${8 - source.row}`,
+        to: `${String.fromCharCode(97 + target.col)}${8 - target.row}`,
         promotion: 'q'
     }
+
+    socket.emit("move", move)
 };
 
 // got symbols of piece from
@@ -109,6 +111,28 @@ const getPieceUniCode = (piece) => {
     return uniCodePieces[piece.type] || ""
 };
 
-renderBoard()
+socket.on("playerRole", (role) => {
+    playerRole = role;
+    renderBoard();
+})
+
+socket.on("spectatorRole", () => {
+    playerRole = null;
+    renderBoard();
+})
+
+// chess.load() -> will load the fen equatino , which we will receive here and then send it to backend
+socket.on("boardState", (fen) => {
+    chess.load(fen);
+    renderBoard
+})
+
+// chess.move() -> will determine the valid move.
+socket.on("move", (move) => {
+    chess.move(move)
+    renderBoard();
+})
+
+
 
 
