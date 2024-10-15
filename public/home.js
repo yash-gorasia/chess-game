@@ -33,7 +33,7 @@ const renderBoard = () => {
                 pieceElem.classList.add("piece",
                     square.color === "w" ? "white" : "black"
                 )
-                pieceElem.innerText = "";
+                pieceElem.innerText = getPieceUniCode(square);
                 pieceElem.draggable = playerRole === square.color;
 
                 pieceElem.addEventListener("dragstart", (e) => {
@@ -79,8 +79,25 @@ const handleMove = () => {
 
 };
 
-const getPieceUniCode = () => {
+// got symbols of piece from
+// https://www.namecheap.com/visual/font-generator/chess-symbols/
+const getPieceUniCode = (piece) => {
+    const uniCodePieces = {
+        p: "♙",
+        r: "♖",
+        n: "♘",
+        b: "♗",
+        q: "♕",
+        k: "♔",
+        P: "♙",
+        R: "♖",
+        N: "♘",
+        B: "♗",
+        Q: "♕",
+        K: "♔",
+    }
 
+    return uniCodePieces[piece.type] || ""
 };
 
 renderBoard()
