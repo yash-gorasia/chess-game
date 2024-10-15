@@ -2,8 +2,9 @@ const express = require('express');
 const http = require('http');
 const Socket = require('socket.io');
 const path = require('path');
-const { Chess } = require('chess.js')
+const { Chess } = require('chess.js');
 const { title } = require('process');
+
 
 
 const app = express();
@@ -15,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', (req, res) => {
-    res.render('home', { title: "Chess Game." });
+    res.render('home', {title: "Chess Game."});
 });
 
 

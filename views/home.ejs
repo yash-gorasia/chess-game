@@ -2,17 +2,21 @@
 <html>
 
 <head>
-    <title>Home Page</title>
-
+    <title>Chess Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
 
-    <div id="chessboard"></div>
+    <div class="w-full h-screen flex items-center justify-center bg-zinc-900">
+        <div class="chessboard h-96 w-96 bg-green-400"></div>
+    </div>
 
 </body>
-
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+    integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="/home.js">
 
 </script>
