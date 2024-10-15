@@ -75,8 +75,17 @@ const renderBoard = () => {
     })
 };
 
-const handleMove = () => {
-
+// here we are using concept of ascii value
+// in chess col are defined as a,b,c,...
+// and rows rows are defined as 1 to 8
+// lets say it is first box so 8th row and ath col
+// so 97 + 0 and 8 - 8
+const handleMove = (source, target) => {
+    const move = {
+        from:`${String.fromCharCode(97+source.col)}${8 - source.row}`,
+        to:`${String.fromCharCode(97+target.col)}${8 - target.row}`,
+        promotion: 'q'
+    }
 };
 
 // got symbols of piece from
