@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', (req, res) => {
-    res.render('home', {title: "Chess Game."});
+    res.render('home', { title: "Chess Game." });
 });
 
 
@@ -93,6 +93,10 @@ io.on("connection", (socket) => {
         }
     })
 
+    socket.on('capture', (data) => {
+        // Broadcast the captured piece to all connected clients
+        io.emit('capture', data);
+    });
 })
 
 server.listen(8000, () => {
