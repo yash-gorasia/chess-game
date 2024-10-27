@@ -1,6 +1,10 @@
 const socket = io();
 const chess = new Chess()
 const boardElement = document.querySelector('.chessboard');
+const buzzerSound = new Audio('/sounds/buzzer.mp3');
+const captureSound = new Audio('/sounds/capture.mp3');
+const moveSound = new Audio('/sounds/move.mp3');
+buzzerSound.volume = 1.0; // Set the volume to 20%
 
 let draggedPiece = null;
 let sourceSquare = null;
@@ -151,6 +155,22 @@ const handleMove = async (source, target) => {
 
     const result = chess.move(move);
 
+    // Play the move sound when a valid move is made
+    console.log("Playing move sound");
+    moveSound.play().catch(err => {
+        console.error("Failed to play move sound:", err);
+    });
+
+    if (!result) {
+        // Play the buzzer sound when an invalid move is made
+        console.log("Invalid move - playing buzzer sound");
+        buzzerSound.play().catch(err => {
+            console.error("Failed to play buzzer sound:", err);
+        })
+        return; // Stop further processing since the move is invalid
+    }
+
+
     // Check piece color and add to the respective array
     if (result && result.captured) {
         const color = result.color === 'w' ? 'black' : 'white';
@@ -162,6 +182,12 @@ const handleMove = async (source, target) => {
             color: color,
             piece: result.captured,
         });
+
+        // Play the capture sound when a piece is captured
+        console.log("Piece captured - playing capture sound");
+        captureSound.play().catch(err => {
+            console.error("Failed to play capture sound:", err);
+        })
 
         defeatedPieces();
     }
