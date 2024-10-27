@@ -11,16 +11,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Route to join the room
 app.get('/', (req, res) => {
-    res.render('room'); 
+    res.render('room');
 });
 
 
 app.get('/home', (req, res) => {
     const roomId = req.query.roomId;
     if (!roomId) {
-        return res.redirect('/'); 
+        return res.redirect('/');
     }
-    res.render('home', { roomId }); 
+    res.render('home', { roomId });
 });
 
 const server = http.createServer(app);
@@ -28,6 +28,14 @@ const io = Socket(server);
 
 const games = {}; // Object to hold each room's game state
 
+// 1. socket.on('connection') -> when a user connects to the server, this event is triggered.
+// 2. socket.on('joinRoom') -> when a user joins a room, this event is triggered.
+// 3. socket.emit('playerRole') -> emit the player role to the user.
+// 4. socket.emit('boardState') -> emit the initial board state to the user.
+// 5. socket.on('move') -> when a user makes a move, this event is triggered.
+// 6. socket.on('disconnect') -> when a user disconnects from the server, this event is triggered.
+// 7. io.to(roomId).emit() -> emit events to all users in a specific room.
+// 8. socket.on('capture') -> when a piece is captured, this event is triggered.
 io.on("connection", (socket) => {
     console.log("User connected.");
 
@@ -63,6 +71,9 @@ io.on("connection", (socket) => {
         socket.emit("boardState", game.chess.fen());
 
         // Handle player move
+        // chess.fen() -> FEN is a standard notation for describing a particular board position of a chess game. The purpose of FEN is to provide all the necessary information to restart a game from a particular position.
+        // chess.move() -> validate if the move is valid or not
+        // chess.turn() -> return the current player turn
         socket.on("move", (move) => {
             const chess = game.chess;
 
