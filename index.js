@@ -3,101 +3,103 @@ const http = require('http');
 const Socket = require('socket.io');
 const path = require('path');
 const { Chess } = require('chess.js');
-const { title } = require('process');
-
-
 
 const app = express();
 
-
 app.set('view engine', 'ejs');
-
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+// Route to join the room
 app.get('/', (req, res) => {
-    res.render('home', { title: "Chess Game." });
+    res.render('room'); 
 });
 
 
-const server = http.createServer(app);
+app.get('/home', (req, res) => {
+    const roomId = req.query.roomId;
+    if (!roomId) {
+        return res.redirect('/'); 
+    }
+    res.render('home', { roomId }); 
+});
 
+const server = http.createServer(app);
 const io = Socket(server);
 
-const chess = new Chess();
-
-let players = {}
-
-let currentPlayer = 'w'
-
+const games = {}; // Object to hold each room's game state
 
 io.on("connection", (socket) => {
-    console.log("user connected.");
+    console.log("User connected.");
 
-    // 1. if the player is not white then assign him white
-    // 2. if the player is not black then assign him black
-    // 3. if both roles are already assigned then , assign him spectator role
-    if (!players.white) {
-        players.white = socket.id;
-        socket.emit("playerRole", "w");
-    }
-    else if (!players.black) {
-        players.black = socket.id
-        socket.emit("playerRole", "b");
-    }
-    else {
-        socket.emit("spectatorRole");
-    }
+    // Join a specific room
+    socket.on('joinRoom', (roomId) => {
+        console.log(`User joined room ${roomId}`);
 
+        socket.join(roomId);
 
-    // dissconect the socket
-    socket.on("disconnect", () => {
-        if (socket.id === players.white) {
-            delete players.white;
+        // Create a new game if the room does not exist
+        if (!games[roomId]) {
+            games[roomId] = {
+                chess: new Chess(),
+                players: {},
+                currentPlayer: 'w'
+            };
         }
-        else if (socket.id === players.black) {
-            delete players.black;
+
+        const game = games[roomId];
+
+        // Assign roles to the player
+        if (!game.players.white) {
+            game.players.white = socket.id;
+            socket.emit("playerRole", "w");
+        } else if (!game.players.black) {
+            game.players.black = socket.id;
+            socket.emit("playerRole", "b");
+        } else {
+            socket.emit("spectatorRole");
         }
-    })
 
-    socket.on("move", (move) => {
-        // chess.turn() ->  a function that returns the side that is currently able to move. 
-        // chess.move() -> will determine the valid move.
-        // chess.fen() ->  a standard notation for describing a particular board position of a chess game.
-        try {
-            // 1. if it is turn of white and black is trying to move then return
-            // 2. if it is turn of black and white is trying to move then return
-            if (chess.turn() === 'w' && socket.id !== players.white) return;
-            else if (chess.turn() === 'b' && socket.id !== players.black) return;
+        // Emit initial board state
+        socket.emit("boardState", game.chess.fen());
 
-            // this line of code will check if the move is valid or not.
-            const result = chess.move(move);
+        // Handle player move
+        socket.on("move", (move) => {
+            const chess = game.chess;
 
-            // 1.we are checking whose turn is it. and then assigning it to the currentPlayer
-            // 2. emit the move event to frontend.
-            // 3. emit the current state of the board , after the move has been made.
-            // 4. if the move is invalid then send msg to the user.
-            if (result) {
-                currentPlayer = chess.turn();
-                io.emit("move", move);
-                io.emit("boardState", chess.fen());
-            }
-            else {
-                console.log("Invalid move.", move);
+            try {
+                // Ensure that the correct player makes the move
+                if (chess.turn() === 'w' && socket.id !== game.players.white) return;
+                if (chess.turn() === 'b' && socket.id !== game.players.black) return;
+
+                const result = chess.move(move);
+                if (result) {
+                    game.currentPlayer = chess.turn();
+                    io.to(roomId).emit("move", move);
+                    io.to(roomId).emit("boardState", chess.fen());
+                } else {
+                    socket.emit("invalidMove", move);
+                }
+            } catch (err) {
+                console.log(err);
                 socket.emit("invalidMove", move);
             }
-        }
-        catch (err) {
-            console.log(err);
-            socket.emit("invalidMove", move);
-        }
-    })
+        });
 
-    socket.on('capture', (data) => {
-        // Broadcast the captured piece to all connected clients
-        io.emit('capture', data);
+        // Handle piece capture
+        socket.on('capture', (data) => {
+            io.to(roomId).emit('capture', data);
+        });
+
+        // Handle player disconnection
+        socket.on("disconnect", () => {
+            if (socket.id === game.players.white) {
+                delete game.players.white;
+            } else if (socket.id === game.players.black) {
+                delete game.players.black;
+            }
+        });
     });
-})
+});
 
 server.listen(8000, () => {
     console.log("Server is running on port 8000");

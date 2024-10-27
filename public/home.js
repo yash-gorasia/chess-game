@@ -7,6 +7,18 @@ let sourceSquare = null;
 let playerRole = null;
 const capturedPieces = { white: [], black: [] }; // Store captured pieces
 
+// serve mathi mde che
+const roomId = "<%= roomId %>"; 
+
+if (roomId) {
+    socket.emit('joinRoom', roomId); // Join the room with the roomId
+} else {
+    alert('Room ID missing. Please enter a valid Room ID.');
+    window.location.href = '/';
+}
+
+
+
 // 1. store the dimension of board using [ board() function ]
 // 2. in some case if  there is some element in board , remove it.
 // 3. traverse through each square of each row.
@@ -131,7 +143,11 @@ const defeatedPieces = () => {
         const pieceElem = document.createElement("div");
         pieceElem.classList.add("piece", "captured", "white");
         pieceElem.innerText = getPieceUniCode({ type: piece.toLowerCase() });
-        leftContainer.append(pieceElem); // Always on the left side
+        if (playerRole === 'w') {
+            leftContainer.append(pieceElem); // Always on the left side
+        } else {
+            rightContainer.append(pieceElem); // Always on the right side
+        }
     });
 
     // Show all defeated black pieces on the right side
@@ -139,7 +155,11 @@ const defeatedPieces = () => {
         const pieceElem = document.createElement("div");
         pieceElem.classList.add("piece", "captured", "black");
         pieceElem.innerText = getPieceUniCode({ type: piece.toLowerCase() });
-        rightContainer.append(pieceElem); // Always on the right side
+        if (playerRole === 'b') {
+            leftContainer.append(pieceElem); // Always on the right side
+        } else {
+            rightContainer.append(pieceElem); // Always on the left side
+        }
     });
 };
 
