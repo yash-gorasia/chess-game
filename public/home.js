@@ -8,7 +8,7 @@ let playerRole = null;
 const capturedPieces = { white: [], black: [] }; // Store captured pieces
 
 // serve mathi mde che
-const roomId = "<%= roomId %>"; 
+const roomId = "<%= roomId %>";
 
 if (roomId) {
     socket.emit('joinRoom', roomId); // Join the room with the roomId
@@ -96,18 +96,36 @@ const renderBoard = () => {
     }
 };
 
+// Function to prompt user for promotion choice
+function promptPromotionChoice() {
+    return new Promise((resolve) => {
+        const choice = prompt("Choose promotion piece (q - Queen, r - Rook, b - Bishop, n - Knight):", "q");
+        const validChoices = ['q', 'r', 'b', 'n'];
+
+        // Default to Queen if input is invalid
+        resolve(validChoices.includes(choice) ? choice : 'q');
+    });
+}
+
 // here we are using concept of ascii value
 // in chess col are defined as a,b,c,...
 // and rows rows are defined as 1 to 8
 // lets say it is first box so 8th row and ath col
 // so 97 + 0 and 8 - 8
 // Function to handle moves and track captures
-const handleMove = (source, target) => {
+const handleMove = async (source, target) => {
     const move = {
         from: `${String.fromCharCode(97 + source.col)}${8 - source.row}`,
         to: `${String.fromCharCode(97 + target.col)}${8 - target.row}`,
-        promotion: 'q', // Promotion to queen for example
     };
+
+    // Detect if a promotion is possible
+    const piece = chess.get(move.from);
+    if (piece && piece.type === 'p' && (move.to.endsWith('8') || move.to.endsWith('1'))) {
+        // Show a prompt or modal to choose the promotion piece
+        const promotionChoice = await promptPromotionChoice();
+        move.promotion = promotionChoice;
+    }
 
     const result = chess.move(move);
 
@@ -145,8 +163,10 @@ const defeatedPieces = () => {
         pieceElem.innerText = getPieceUniCode({ type: piece.toLowerCase() });
         if (playerRole === 'w') {
             leftContainer.append(pieceElem); // Always on the left side
-        } else {
+        } else if (playerRole === 'b') {
             rightContainer.append(pieceElem); // Always on the right side
+        } else {
+            leftContainer.append(pieceElem); // Always on the left side
         }
     });
 
@@ -157,8 +177,10 @@ const defeatedPieces = () => {
         pieceElem.innerText = getPieceUniCode({ type: piece.toLowerCase() });
         if (playerRole === 'b') {
             leftContainer.append(pieceElem); // Always on the right side
-        } else {
+        } else if (playerRole === 'w') {
             rightContainer.append(pieceElem); // Always on the left side
+        } else {
+            rightContainer.append(pieceElem); // Always on the
         }
     });
 };

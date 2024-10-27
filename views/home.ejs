@@ -63,12 +63,16 @@
 </head>
 
 <body>
-
-    <div class="w-full h-screen flex items-center justify-center bg-zinc-900">
-        <div class="lostpiece_left h-96 w-10 mr-6 bg-zinc-400 border rounded-3xl justify-between"></div>
-        <div class="chessboard h-96 w-96 "></div>
-        <div class="lostpiece_right h-96 w-10 ml-6 bg-zinc-400 border rounded-3xl justify-between"></div>
-    </div>
+    <main class="w-full h-screen flex flex-col items-center justify-center gap-12 bg-zinc-900">
+        <div class="text-white text-4xl flex items-center justify-center">
+            <h1></h1>
+        </div>
+        <div class=" flex items-center justify-center">
+            <div class="lostpiece_left h-96 w-10 mr-6 bg-zinc-400 border rounded-3xl justify-between"></div>
+            <div class="chessboard h-96 w-96 "></div>
+            <div class="lostpiece_right h-96 w-10 ml-6 bg-zinc-400 border rounded-3xl justify-between"></div>
+        </div>
+    </main>
 
 </body>
 <script src="/socket.io/socket.io.js"></script>
