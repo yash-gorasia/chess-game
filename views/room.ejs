@@ -8,6 +8,8 @@
 
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
     <div class="text-center">
+        <h1 class="text-3xl mb-6">Enter Name</h1>
+        <input id="nameInput" type="text" class="p-2 rounded-md text-black mb-16" placeholder="Enter Name" />
         <h1 class="text-3xl mb-6">Enter Room ID</h1>
         <input id="roomIdInput" type="text" class="p-2 rounded-md text-black" placeholder="Enter Room ID" />
         <button id="joinRoomBtn" class="ml-4 p-2 bg-blue-500 rounded-md">Join Room</button>
@@ -16,11 +18,12 @@
     <script>
         document.getElementById('joinRoomBtn').addEventListener('click', function () {
             const roomId = document.getElementById('roomIdInput').value.trim();
-            if (roomId) {
+            const name = document.getElementById('nameInput').value.trim();
+            if (roomId && name) {
                 // Redirect to home.ejs with roomId as query parameter
-                window.location.href = `/home?roomId=${roomId}`;
+                window.location.href = `/home?roomId=${roomId}&name=${name}`;
             } else {
-                alert('Room ID cannot be empty.');
+                alert('Please enter a valid room ID and name');
             }
         });
     </script>

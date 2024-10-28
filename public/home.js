@@ -10,8 +10,13 @@ let sourceSquare = null;
 let playerRole = null;
 const capturedPieces = { white: [], black: [] }; // Store captured pieces
 
-// serve mathi mde che
+// server mathi mde che
 const roomId = "<%= roomId %>";
+// unable to fetch name from the server
+// using URLSearchParams to get the name from the URL
+const urlParams = new URLSearchParams(window.location.search);
+const name = urlParams.get('name');
+
 
 if (roomId) {
     socket.emit('joinRoom', roomId); // Join the room with the roomId
@@ -100,12 +105,18 @@ const renderBoard = () => {
 };
 
 
+// append the name of the player
+const nameInput = document.querySelector('.name');
+nameInput.innerText = `Name: ${name}`;
+const naam = document.createElement('h1');
+nameInput.append(naam);
+
 // 1. get the element of name class
 // 2. create a h1 element
 // 3. append the player element initially
 // 4. update the player's displayed role
 // use this in playerRole socket and spectatorRole socket
-const userColor = document.querySelector('.name');
+const userColor = document.querySelector('.player-color');
 const Player = document.createElement('h1');
 userColor.append(Player); // Append the player element initially
 

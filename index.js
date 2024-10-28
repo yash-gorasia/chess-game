@@ -17,10 +17,12 @@ app.get('/', (req, res) => {
 
 app.get('/home', (req, res) => {
     const roomId = req.query.roomId;
+    const name = req.query.name;
+    
     if (!roomId) {
         return res.redirect('/');
     }
-    res.render('home', { roomId });
+    res.render('home', { roomId, name });
 });
 
 const server = http.createServer(app);
