@@ -104,33 +104,6 @@ const renderBoard = () => {
     }
 };
 
-
-// append the name of the player
-const nameInput = document.querySelector('.name');
-nameInput.innerText = `Name: ${name}`;
-const naam = document.createElement('h1');
-nameInput.append(naam);
-
-// 1. get the element of name class
-// 2. create a h1 element
-// 3. append the player element initially
-// 4. update the player's displayed role
-// use this in playerRole socket and spectatorRole socket
-const userColor = document.querySelector('.player-color');
-const Player = document.createElement('h1');
-userColor.append(Player); // Append the player element initially
-
-// Function to update the player's displayed role
-const updatePlayerRoleDisplay = () => {
-    if (playerRole === 'w') {
-        Player.innerText = "Player: White";
-    } else if (playerRole === 'b') {
-        Player.innerText = "Player: Black";
-    } else {
-        Player.innerText = "Player: Spectator";
-    }
-};
-
 // Function to prompt user for promotion choice
 // This will be used when a pawn reaches the opposite end of the board
 function promptPromotionChoice() {
@@ -181,7 +154,7 @@ const handleMove = async (source, target) => {
         return;
     }
 
- 
+
 
 
     // Check piece color and add to the respective array
@@ -275,14 +248,54 @@ const getPieceUniCode = (piece) => {
 };
 
 
+// append the name of the player
+const nameInput = document.querySelector('.name');
+nameInput.innerText = `Name: ${name}`;
+const naam = document.createElement('h1');
+nameInput.append(naam);
+
+// 1. get the element of name class
+// 2. create a h1 element
+// 3. append the player element initially
+// 4. update the player's displayed role
+// use this in playerRole socket and spectatorRole socket
+const userColor = document.querySelector('.player-color');
+const Player = document.createElement('h1');
+userColor.append(Player); // Append the player element initially
+
+// Function to update the player's displayed role
+const updatePlayerRoleDisplay = () => {
+    if (playerRole === 'w') {
+        Player.innerText = "Player: White";
+    } else if (playerRole === 'b') {
+        Player.innerText = "Player: Black";
+    } else {
+        Player.innerText = "Player: Spectator";
+    }
+};
+
+
+function checkturn() {
+    const turn = document.querySelector('.turn');
+    const turnElement = document.createElement('h1');
+    turn.append(turnElement);
+    if (chess.turn() === 'w') {
+        turn.innerText = "White's turn";
+    } else {
+        turn.innerText = "Black's turn";
+    }
+}
+
 socket.on("playerRole", (role) => {
     playerRole = role;
     updatePlayerRoleDisplay();
+    checkturn();
     renderBoard();
 })
 
 socket.on("spectatorRole", () => {
     playerRole = null;
+    checkturn();
     updatePlayerRoleDisplay();
     renderBoard();
 })
@@ -296,7 +309,7 @@ socket.on("boardState", (fen) => {
 // chess.move() -> will determine the valid move.
 socket.on("move", (move) => {
     chess.move(move)
-
+    checkturn();
     renderBoard();
 })
 
